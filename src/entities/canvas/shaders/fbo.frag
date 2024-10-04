@@ -37,20 +37,43 @@ float fbm(vec2 x, int numOctaves) {
 	return v;
 }
 
+float blendDarken(float base, float blend) {
+	return min(blend,base);
+}
 
+vec3 blendDarken(vec3 base, vec3 blend) {
+	return vec3(blendDarken(base.r,blend.r),blendDarken(base.g,blend.g),blendDarken(base.b,blend.b));
+}
+
+vec3 blendDarken(vec3 base, vec3 blend, float opacity) {
+	return (blendDarken(base, blend) * opacity + base * (1.0 - opacity));
+}
+
+
+vec3 bgColor = vec3(1., 1.,1.);
 void main() {
     vec4 color = texture2D(tDiffuse, vUv);
     vec4 prev = texture2D(tPrev, vUv);
     // gl_FragColor = prev;
-    // gl_FragColor = prev * 0.99;  
+    // gl_FragColor = prev * 0.99;   texel
 
 
     vec2 aspect = vec2(1., uResolution.y/uResolution.x);
 
     vec2 disp = fbm(vUv * 33., 7) * aspect * 0.005;
-    // gl_FragColor = vec4(disp, 0., 1.);
 
+    vec4 texel1 = texture2D(tPrev, vUv);
+    vec4 texel2 = texture2D(tPrev, vec2(vUv.x +disp.x, vUv.y));
+    vec4 texel3 = texture2D(tPrev, vec2(vUv.x -disp.x, vUv.y));
+    vec4 texel4 = texture2D(tPrev, vec2(vUv.x, vUv.y + disp.y));
+    vec4 texel5 = texture2D(tPrev, vec2(vUv.x, vUv.y - disp.y));
+	vec3 floodColor = texel1.rgb;
+	floodColor = blendDarken(floodColor, texel2.rgb);
+	floodColor = blendDarken(floodColor, texel3.rgb);
+	floodColor = blendDarken(floodColor, texel4.rgb);
+	floodColor = blendDarken(floodColor, texel5.rgb);
 
-
-    gl_FragColor =  prev;
+    gl_FragColor =  texel2 ;
+	gl_FragColor = vec4(floodColor, 1.);
 }
+
