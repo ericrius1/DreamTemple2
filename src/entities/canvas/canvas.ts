@@ -27,7 +27,7 @@ export class Canvas {
     this.sizeX = 6.77; // should match aspect ratio of mesh
     this.sizeY = 4.33;
 
-    this.store.textureLoader.load("/textures/white.jpg", (texture) => {
+    this.store.textureLoader.load("/textures/white.webp", (texture) => {
       this.whiteTexture = texture;
       this.setupPipeline();
       this.mesh.material = new THREE.MeshBasicMaterial({ map: this.finalTarget.texture });

@@ -62,3 +62,5 @@ add water color painting to a little canvas above a calming reflective pool
 drip drop on pottery or other spinning cool thing
 
 colab - with music
+
+can do global post process for watercolors = render everything to texture and spread

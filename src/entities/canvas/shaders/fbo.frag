@@ -60,7 +60,7 @@ void main() {
 
     vec2 aspect = vec2(1., uResolution.y/uResolution.x);
 
-    vec2 disp = fbm(vUv * 33., 7) * aspect * 0.005;
+    vec2 disp = fbm(vUv * 33., 7) * aspect * 0.001;
 
     vec4 texel1 = texture2D(tPrev, vUv);
     vec4 texel2 = texture2D(tPrev, vec2(vUv.x +disp.x, vUv.y));
@@ -73,7 +73,7 @@ void main() {
 	floodColor = blendDarken(floodColor, texel4.rgb);
 	floodColor = blendDarken(floodColor, texel5.rgb);
 
-    gl_FragColor =  texel2 ;
+    // gl_FragColor =  texel2 ;
 	gl_FragColor = vec4(floodColor, 1.);
 }
 
