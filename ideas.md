@@ -58,3 +58,7 @@ can load music from spotify or somewhere
 then play with pitch etc with hand controllers
 
 add water color painting to a little canvas above a calming reflective pool
+
+drip drop on pottery or other spinning cool thing
+
+colab - with music

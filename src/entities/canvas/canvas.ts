@@ -3,6 +3,7 @@ import { Store } from "../../store";
 import vertex from "./shaders/vertex.glsl";
 import fragment from "./shaders/fragment.glsl";
 import fragmentFBO from "./shaders/fbo.frag";
+import { mapLinear } from "three/src/math/MathUtils";
 
 export class Canvas {
   private mesh: THREE.Mesh;
@@ -43,9 +44,9 @@ export class Canvas {
 
     this.fboScene = new THREE.Scene();
 
-    const testMesh = new THREE.Mesh(new THREE.SphereGeometry(0.1, 100, 100));
-    testMesh.position.z -= 0.5;
-    this.fboScene.add(testMesh);
+    this.paintbrush = new THREE.Mesh(new THREE.SphereGeometry(0.1, 100, 100));
+    this.paintbrush.z -= 0.5;
+    this.fboScene.add(this.paintbrush);
     // this.fboCamera = new THREE.PerspectiveCamera(50, 1, 0.1, 10000);
     this.fboCamera = new THREE.OrthographicCamera(
       -this.sizeX / 2,
@@ -77,6 +78,10 @@ export class Canvas {
       this.store.inputManager.getInputState().cast
     ) {
       console.log("canvas intersected");
+      const uv = this.store.intersection.uv;
+      const mappedPointX = mapLinear(uv.x, 0, 1, -this.sizeX / 2, this.sizeX / 2);
+      const mappedPointY = mapLinear(uv.y, 0, 1, -this.sizeY / 2, this.sizeY / 2);
+      this.paintbrush.position.set(mappedPointX, mappedPointY, -0.5);
     }
 
     this.renderer.setRenderTarget(this.targetA);
