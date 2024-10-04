@@ -1,7 +1,7 @@
 import * as THREE from "three"
 import { StaticGeometryGenerator, MeshBVH, MeshBVHHelper } from "three-mesh-bvh"
 import { Store } from "./store"
-import { Canvas } from "./entities/canvas"
+import { Canvas } from "./entities/canvas/canvas"
 
 const params = {
   displayCollider: false,

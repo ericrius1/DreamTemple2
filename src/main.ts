@@ -38,6 +38,8 @@ window.addEventListener(
     store.camera.updateProjectionMatrix()
 
     store.renderer.setSize(window.innerWidth, window.innerHeight)
+    store.height = window.innerHeight
+    store.width = window.innerWidth
   },
   false
 )

@@ -31,6 +31,8 @@ export interface Store {
   interactables: THREE.Object3D[]
   hoveredObject: THREE.Object3D | null
   intersection: THREE.Intersection | null
+  width: number
+  height: number
 }
 
 export function createGlobalStore(): Store {
@@ -94,9 +96,9 @@ export function createGlobalStore(): Store {
       store.renderer.toneMapping = Number(v)
       store.renderer.toneMappingExposure = 1.5
     })
-  document
-    .querySelector("#canvas-container")
-    ?.appendChild(store.renderer.domElement)
+
+  const canvasContainer = document.querySelector("#canvas-container")
+  canvasContainer?.appendChild(store.renderer.domElement)
 
   return store
 }
