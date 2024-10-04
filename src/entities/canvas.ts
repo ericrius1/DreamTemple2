@@ -13,5 +13,12 @@ export class Canvas {
     this.cursor = document.querySelector(".cursor")
   }
 
-  update() {}
+  update() {
+    if (
+      this.store.intersection?.object === this.mesh &&
+      this.store.inputManager.getInputState().cast
+    ) {
+      console.log("canvas intersected")
+    }
+  }
 }

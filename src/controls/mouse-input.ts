@@ -13,7 +13,6 @@ export class MouseInput {
     this.inputState = {
       forward: 0,
       right: 0,
-      thrust: 0,
       rotateHorizontal: 0,
       rotateVertical: 0,
       jump: false,
@@ -22,6 +21,12 @@ export class MouseInput {
 
     this.setupEventListeners()
     this.containerEl.addEventListener("click", this.requestLock.bind(this))
+    this.containerEl.addEventListener("pointerdown", () => {
+      this.inputState.cast = true
+    })
+    this.containerEl.addEventListener("pointerup", () => {
+      this.inputState.cast = false
+    })
   }
 
   private setupEventListeners() {

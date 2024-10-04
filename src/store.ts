@@ -29,6 +29,8 @@ export interface Store {
   composer: EffectComposer | null
   raycaster: THREE.Raycaster | null
   interactables: THREE.Object3D[]
+  hoveredObject: THREE.Object3D | null
+  intersection: THREE.Intersection | null
 }
 
 export function createGlobalStore(): Store {
@@ -59,6 +61,7 @@ export function createGlobalStore(): Store {
     postProcessing: null,
     raycaster: new THREE.Raycaster(),
     interactables: [],
+    intersection: null,
   }
 
   // Add Draco loader to GLTFLoader

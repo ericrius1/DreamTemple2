@@ -11,10 +11,8 @@ export interface InputState {
   right: number
   rotateHorizontal: number
   rotateVertical: number
-  thrust: number
   jump: boolean
   cast: boolean
-  boost: boolean
 }
 
 export class InputManager {
@@ -42,8 +40,10 @@ export class InputManager {
     const intersects = raycaster.intersectObjects(this.store.interactables)
     if (intersects.length > 0) {
       this.cursor.classList.add("hovered")
+      this.store.intersection = intersects[0]
     } else {
       this.cursor.classList.remove("hovered")
+      this.store.intersection = null
     }
   }
 
@@ -54,13 +54,11 @@ export class InputManager {
     return {
       forward: keyboardState.forward || gamepadState.forward,
       right: keyboardState.right || gamepadState.right,
-      thrust: keyboardState.thrust || gamepadState.thrust,
       rotateHorizontal:
         mouseState.rotateHorizontal || gamepadState.rotateHorizontal,
       rotateVertical: mouseState.rotateVertical || gamepadState.rotateVertical,
       jump: keyboardState.jump || gamepadState.jump,
-      cast: keyboardState.cast || gamepadState.cast,
-      boost: keyboardState.boost || gamepadState.boost,
+      cast: keyboardState.cast || gamepadState.cast || mouseState.cast,
     }
   }
 }
