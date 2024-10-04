@@ -71,6 +71,7 @@ export class Canvas {
       uniforms: {
         tDiffuse: { value: null },
         tPrev: { value: this.whiteTexture },
+        uResolution: { value: new THREE.Vector4(this.sizeX, this.sizeY, 1, 1) },
       },
       vertexShader: vertex,
       fragmentShader: fragmentFBO,
