@@ -1,6 +1,7 @@
 import * as THREE from "three"
 import { StaticGeometryGenerator, MeshBVH, MeshBVHHelper } from "three-mesh-bvh"
 import { Store } from "./store"
+import { Canvas } from "./entities/canvas"
 
 const params = {
   displayCollider: false,
@@ -13,57 +14,59 @@ export function loadWorld(store: Store) {
   let collider: THREE.Mesh
   let visualizer: MeshBVHHelper
   const { scene, gui, gltfLoader } = store
-  loadColliderEnvironment()
   setupGUI()
 
-  function loadColliderEnvironment() {
-    gltfLoader.load("/glb/dreamtemple.glb", async (res) => {
-      const gltfScene = res.scene
-      gltfScene.traverse(async (obj) => {
-        if (obj instanceof THREE.Mesh) {
-          obj.castShadow = true
-          obj.receiveShadow = true
-          if (obj.material) {
-            // obj.material.shadowSide = THREE.DoubleSide
-            // obj.material.side = THREE.DoubleSide
+  return new Promise((resolve, reject) => {
+    gltfLoader.load(
+      "/glb/dreamtemple.glb",
+      async (res) => {
+        const gltfScene = res.scene
+        gltfScene.traverse(async (obj) => {
+          if (obj instanceof THREE.Mesh) {
+            obj.castShadow = true
+            obj.receiveShadow = true
           }
-        }
-        if (obj instanceof THREE.Light) {
-          obj.castShadow = true
-          if (
-            obj instanceof THREE.DirectionalLight ||
-            obj instanceof THREE.SpotLight
-          ) {
-            // obj.shadow.mapSize.width = 2048
-            // obj.shadow.mapSize.height = 2048
-            obj.shadow.bias = -0.001
+          if (obj instanceof THREE.Light) {
+            obj.castShadow = true
+            if (
+              obj instanceof THREE.DirectionalLight ||
+              obj instanceof THREE.SpotLight
+            ) {
+              obj.shadow.bias = -0.001
+            }
           }
-        }
-      })
-      environment = gltfScene
+          if (obj.name.includes("Canvas")) {
+            new Canvas({ mesh: obj })
+          }
+        })
+        environment = gltfScene
 
-      const staticGenerator = new StaticGeometryGenerator(environment)
-      staticGenerator.attributes = ["position"]
+        const staticGenerator = new StaticGeometryGenerator(environment)
+        staticGenerator.attributes = ["position"]
 
-      const mergedGeometry = staticGenerator.generate()
-      mergedGeometry.boundsTree = new MeshBVH(mergedGeometry)
+        const mergedGeometry = staticGenerator.generate()
+        mergedGeometry.boundsTree = new MeshBVH(mergedGeometry)
 
-      collider = new THREE.Mesh(mergedGeometry)
-      collider.material.wireframe = true
-      collider.material.opacity = 0.5
-      collider.material.transparent = true
-      collider.visible = false
+        collider = new THREE.Mesh(mergedGeometry)
+        collider.material.wireframe = true
+        collider.material.opacity = 0.5
+        collider.material.transparent = true
+        collider.visible = false
 
-      store["collisionWorld"] = collider
+        store["collisionWorld"] = collider
 
-      visualizer = new MeshBVHHelper(collider, params.visualizeDepth)
-      visualizer.opacity = 0.8
-      visualizer.visible = false
-      scene.add(visualizer)
-      scene.add(collider)
-      scene.add(environment)
-    })
-  }
+        visualizer = new MeshBVHHelper(collider, params.visualizeDepth)
+        visualizer.opacity = 0.8
+        visualizer.visible = false
+        scene.add(visualizer)
+        scene.add(collider)
+        scene.add(environment)
+        resolve(undefined)
+      },
+      undefined,
+      reject
+    )
+  })
 
   function setupGUI() {
     const visFolder = gui.addFolder("Visualization")

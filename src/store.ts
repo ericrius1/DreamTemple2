@@ -27,6 +27,7 @@ export interface Store {
   gravity: number
   playerVelocity: THREE.Vector3
   composer: EffectComposer | null
+  raycaster: THREE.Raycaster | null
 }
 
 export function createGlobalStore(): Store {
@@ -55,6 +56,7 @@ export function createGlobalStore(): Store {
     launcher: null,
     gravity: -9.8,
     postProcessing: null,
+    raycaster: new THREE.Raycaster(),
   }
 
   // Add Draco loader to GLTFLoader

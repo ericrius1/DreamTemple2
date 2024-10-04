@@ -17,6 +17,16 @@ export const Environment = async (store) => {
   // scene.add(new THREE.HemisphereLight(0xffa07a, 0x4b0082, 0.2)) // Light Salmon sky, Indigo ground, increased intensity for sunset vibe
   scene.add(new THREE.AmbientLight(0xffffff, 0.2))
 
+  // Create a small render target for the cube camera
+  const cubeRenderTarget = new THREE.WebGLCubeRenderTarget(128)
+  // Create a cube camera
+  const cubeCamera = new THREE.CubeCamera(0.1, 1000, cubeRenderTarget)
+  scene.add(cubeCamera)
+  // Position the cube camera
+  cubeCamera.position.set(0, 3, 0)
+  // Render the cube camera once
+  cubeCamera.update(renderer, scene)
+
   const hemisphereLight = new THREE.HemisphereLight(0x8080ff, 0x404040, 0.5)
   scene.add(hemisphereLight)
 
