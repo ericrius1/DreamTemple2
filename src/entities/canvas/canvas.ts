@@ -47,16 +47,15 @@ export class Canvas {
     // this.targetB.texture.minFilter = THREE.NearestFilter;
     // this.targetB.texture.magFilter = THREE.NearestFilter;
     // this.paintbrush.z -= 0.5;
-    this.targetA.texture.anisotropy = this.renderer.capabilities.getMaxAnisotropy();
-    this.targetB.texture.anisotropy = this.renderer.capabilities.getMaxAnisotropy();
-    this.finalTarget.texture.anisotropy = this.renderer.capabilities.getMaxAnisotropy();
+    // this.targetA.texture.anisotropy = this.renderer.capabilities.getMaxAnisotropy();
+    // this.targetB.texture.anisotropy = this.renderer.capabilities.getMaxAnisotropy();
+    // this.finalTarget.texture.anisotropy = this.renderer.capabilities.getMaxAnisotropy();
 
     this.sourceScene = new THREE.Scene();
     this.paintbrush = new THREE.Mesh(
-      new THREE.SphereGeometry(0.2, 100, 100),
+      new THREE.SphereGeometry(0.2, 20, 20),
       new THREE.MeshBasicMaterial()
     );
-    this.paintbrush.position.set(0, 0, -0.5);
     this.sourceScene.add(this.paintbrush);
 
     this.fboScene = new THREE.Scene();
@@ -105,6 +104,8 @@ export class Canvas {
       const mappedPointX = mapLinear(uv.x, 0, 1, -this.sizeX / 2, this.sizeX / 2);
       const mappedPointY = mapLinear(uv.y, 0, 1, -this.sizeY / 2, this.sizeY / 2);
       this.paintbrush.position.set(mappedPointX, mappedPointY, -0.5);
+    } else {
+      this.paintbrush.position.set(0, 0, 10);
     }
 
     this.renderer.setRenderTarget(this.sourceTarget);

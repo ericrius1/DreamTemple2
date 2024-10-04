@@ -105,7 +105,7 @@ void main() {
 
     vec2 aspect = vec2(1., uResolution.y/uResolution.x);
 
-    vec2 disp = fbm(vUv * 33., 7) * aspect * 0.005;
+    vec2 disp = fbm(vUv * 22., 5) * aspect * 0.001;
 
     vec4 texel1 = texture2D(tPrev, vUv);
     vec4 texel2 = texture2D(tPrev, vec2(vUv.x +disp.x, vUv.y));
@@ -118,14 +118,14 @@ void main() {
 	floodColor = blendDarken(floodColor, texel4.rgb);
 	floodColor = blendDarken(floodColor, texel5.rgb);
 
-	vec3 gradient = hsl2rgb(fract(uTime * 0.1), 0.5, 0.5);
+	vec3 gradient = hsl2rgb(fract(uTime * 0.05), 0.5, 0.5);
 	vec3 lcolor = mix(vec3(1.), gradient, color.r);
 
 
 
-	vec3 waterColor = blendDarken(prev.rgb, floodColor * (1. + 0.01),0.2);
+	vec3 waterColor = blendDarken(prev.rgb, floodColor * (1. + 0.0001),0.7);
 
-	vec3 finalColor = blendDarken(waterColor, lcolor, 0.9);
+	vec3 finalColor = blendDarken(waterColor, lcolor, 0.5);
 
     // gl_FragColor =  texel2 ;
 	gl_FragColor = vec4(finalColor, 1.);
