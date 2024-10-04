@@ -1,54 +1,49 @@
-import GUI from "three/addons/libs/lil-gui.module.min.js"
-import * as THREE from "three"
-import { OrbitControls } from "./controls/orbit-controls"
-import { InputManager } from "./controls/input-manager"
-import { Launcher } from "./launcher"
-import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js"
-import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js"
-import { EffectComposer } from "postprocessing"
+import GUI from "three/addons/libs/lil-gui.module.min.js";
+import * as THREE from "three";
+import { OrbitControls } from "./controls/orbit-controls";
+import { InputManager } from "./controls/input-manager";
+import { Launcher } from "./launcher";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
+import { EffectComposer } from "postprocessing";
 
-type UpdateFunction = (delta: number) => void
+type UpdateFunction = (delta: number) => void;
 
 export interface Store {
-  scene: THREE.Scene
-  camera: THREE.PerspectiveCamera
-  renderer: THREE.WebGLRenderer
-  gui: GUI
-  controls: OrbitControls | null
-  registerUpdate: (cb: UpdateFunction) => void
-  updateFunctions: UpdateFunction[]
-  playerPosition: THREE.Vector3
-  collisionWorld: THREE.Mesh | null
-  inputManager: InputManager | null
-  gltfLoader: THREE.GLTFLoader
-  textureLoader: THREE.TextureLoader
-  clock: THREE.Clock
-  launcher: Launcher | null
-  gravity: number
-  playerVelocity: THREE.Vector3
-  composer: EffectComposer | null
-  raycaster: THREE.Raycaster | null
-  interactables: THREE.Object3D[]
-  hoveredObject: THREE.Object3D | null
-  intersection: THREE.Intersection | null
-  width: number
-  height: number
+  scene: THREE.Scene;
+  camera: THREE.PerspectiveCamera;
+  renderer: THREE.WebGLRenderer;
+  gui: GUI;
+  controls: OrbitControls | null;
+  registerUpdate: (cb: UpdateFunction) => void;
+  updateFunctions: UpdateFunction[];
+  playerPosition: THREE.Vector3;
+  collisionWorld: THREE.Mesh | null;
+  inputManager: InputManager | null;
+  gltfLoader: THREE.GLTFLoader;
+  textureLoader: THREE.TextureLoader;
+  clock: THREE.Clock;
+  launcher: Launcher | null;
+  gravity: number;
+  playerVelocity: THREE.Vector3;
+  composer: EffectComposer | null;
+  raycaster: THREE.Raycaster | null;
+  interactables: THREE.Object3D[];
+  hoveredObject: THREE.Object3D | null;
+  intersection: THREE.Intersection | null;
+  width: number;
+  height: number;
 }
 
 export function createGlobalStore(): Store {
   let store: Store = {
     scene: new THREE.Scene(),
-    camera: new THREE.PerspectiveCamera(
-      50,
-      window.innerWidth / window.innerHeight,
-      0.1,
-      10000
-    ),
-    renderer: new THREE.WebGLRenderer({ antialias: true }),
+    camera: new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 10000),
+    renderer: new THREE.WebGLRenderer({ antialias: true, alpha: false }),
     gui: new GUI(),
     controls: null,
     registerUpdate: (cb) => {
-      store.updateFunctions.push(cb)
+      store.updateFunctions.push(cb);
     },
     updateFunctions: [],
     playerPosition: new THREE.Vector3(0, 0, 0),
@@ -64,26 +59,22 @@ export function createGlobalStore(): Store {
     raycaster: new THREE.Raycaster(),
     interactables: [],
     intersection: null,
-  }
+  };
 
   // Add Draco loader to GLTFLoader
-  const dracoLoader = new DRACOLoader()
-  dracoLoader.setDecoderPath("/draco/")
-  store.gltfLoader.setDRACOLoader(dracoLoader)
+  const dracoLoader = new DRACOLoader();
+  dracoLoader.setDecoderPath("/draco/");
+  store.gltfLoader.setDRACOLoader(dracoLoader);
 
-  store.inputManager = new InputManager(store)
-  store.controls = new OrbitControls(
-    store.camera,
-    store.inputManager,
-    store.renderer.domElement
-  )
-  store.controls.enableDamping = true
-  store.renderer.setSize(window.innerWidth, window.innerHeight)
+  store.inputManager = new InputManager(store);
+  store.controls = new OrbitControls(store.camera, store.inputManager, store.renderer.domElement);
+  store.controls.enableDamping = true;
+  store.renderer.setSize(window.innerWidth, window.innerHeight);
   // store.renderer.setPixelRatio(1)
   // store.renderer.toneMapping = THREE.ReinhardToneMapping
-  store.renderer.toneMappingExposure = 10
-  store.renderer.shadowMap.enabled = true
-  store.renderer.shadowMap.type = THREE.PCFSoftShadowMap
+  store.renderer.toneMappingExposure = 10;
+  store.renderer.shadowMap.enabled = true;
+  store.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
   store.gui
     .add({ toneMapping: THREE.ACESFilmicToneMapping }, "toneMapping", {
@@ -92,13 +83,13 @@ export function createGlobalStore(): Store {
       reinhard: THREE.ReinhardToneMapping,
     })
     .onChange((v) => {
-      console.log(v)
-      store.renderer.toneMapping = Number(v)
-      store.renderer.toneMappingExposure = 1.5
-    })
+      console.log(v);
+      store.renderer.toneMapping = Number(v);
+      store.renderer.toneMappingExposure = 1.5;
+    });
 
-  const canvasContainer = document.querySelector("#canvas-container")
-  canvasContainer?.appendChild(store.renderer.domElement)
+  const canvasContainer = document.querySelector("#canvas-container");
+  canvasContainer?.appendChild(store.renderer.domElement);
 
-  return store
+  return store;
 }

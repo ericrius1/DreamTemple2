@@ -9,6 +9,9 @@
     "build": "vite build",
     "preview": "vite preview"
   },
+  "prettier": {
+    "printWidth": 100
+  },
   "dependencies": {
     "postprocessing": "^6.36.3",
     "stats.js": "^0.17.0",
