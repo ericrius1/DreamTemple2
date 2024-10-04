@@ -27,10 +27,13 @@ export class Canvas {
     this.sizeX = 6.77; // should match aspect ratio of mesh
     this.sizeY = 4.33;
 
-    this.setupPipeline();
-    this.mesh.material = new THREE.MeshBasicMaterial({ map: this.finalTarget.texture });
+    this.store.textureLoader.load("/textures/white.jpg", (texture) => {
+      this.whiteTexture = texture;
+      this.setupPipeline();
+      this.mesh.material = new THREE.MeshBasicMaterial({ map: this.finalTarget.texture });
 
-    this.store.registerUpdate(this.update.bind(this));
+      this.store.registerUpdate(this.update.bind(this));
+    });
   }
 
   setupPipeline() {
@@ -40,11 +43,20 @@ export class Canvas {
     this.finalTarget = new THREE.WebGLRenderTarget(2048, 2048);
 
     this.sourceScene = new THREE.Scene();
-    this.fboScene = new THREE.Scene();
-
-    this.paintbrush = new THREE.Mesh(new THREE.SphereGeometry(0.1, 100, 100));
-    this.paintbrush.z -= 0.5;
+    this.paintbrush = new THREE.Mesh(
+      new THREE.SphereGeometry(0.2, 100, 100),
+      new THREE.MeshBasicMaterial({ color: "purple" })
+    );
+    // this.paintbrush.z -= 0.5;
     this.sourceScene.add(this.paintbrush);
+    this.bgmesh = new THREE.Mesh(
+      new THREE.PlaneGeometry(1, 1),
+      new THREE.MeshBasicMaterial({ color: "white" })
+    );
+    this.sourceScene.add(this.bgmesh);
+    this.bgmesh.position.z = -0.5;
+
+    this.fboScene = new THREE.Scene();
 
     this.fboCamera = new THREE.OrthographicCamera(
       -this.sizeX / 2,
@@ -58,7 +70,7 @@ export class Canvas {
     this.fboMaterial = new THREE.ShaderMaterial({
       uniforms: {
         tDiffuse: { value: null },
-        tPrev: { value: null },
+        tPrev: { value: this.whiteTexture },
       },
       vertexShader: vertex,
       fragmentShader: fragmentFBO,
@@ -73,7 +85,7 @@ export class Canvas {
     this.finalScene = new THREE.Scene();
     this.finalQuad = new THREE.Mesh(
       new THREE.PlaneGeometry(this.sizeX, this.sizeY),
-      new THREE.MeshBasicMaterial({ map: null })
+      new THREE.MeshBasicMaterial({ map: this.targetA.texture })
     );
     this.finalScene.add(this.finalQuad);
   }
@@ -94,18 +106,19 @@ export class Canvas {
     this.renderer.render(this.sourceScene, this.fboCamera);
 
     this.renderer.setRenderTarget(this.targetA);
-    this.fboMaterial.uniforms.tDiffuse.value = this.sourceTarget.texture;
-    this.fboMaterial.uniforms.tPrev.value = this.targetB.texture;
     this.renderer.render(this.fboScene, this.fboCamera);
+    this.fboMaterial.uniforms.tDiffuse.value = this.sourceTarget.texture;
+    this.fboMaterial.uniforms.tPrev.value = this.targetA.texture;
 
-    this.finalQuad.material.map = this.targetA.texture;
     this.renderer.setRenderTarget(this.finalTarget);
+    this.finalQuad.material.map = this.targetA.texture;
     this.renderer.render(this.finalScene, this.fboCamera);
 
-    this.renderer.setRenderTarget(null);
-    // swap
     let temp = this.targetA;
     this.targetA = this.targetB;
     this.targetB = temp;
+    this.renderer.setRenderTarget(null);
+
+    // swap
   }
 }
