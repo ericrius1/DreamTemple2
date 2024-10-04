@@ -75,6 +75,7 @@ export class Canvas {
         tDiffuse: { value: null },
         tPrev: { value: this.whiteTexture },
         uResolution: { value: new THREE.Vector4(this.sizeX, this.sizeY, 1, 1) },
+        uTime: { value: 0 },
       },
       vertexShader: vertex,
       fragmentShader: fragmentFBO,
@@ -111,6 +112,7 @@ export class Canvas {
 
     this.renderer.setRenderTarget(this.targetA);
     this.renderer.render(this.fboScene, this.fboCamera);
+    this.fboMaterial.uniforms.uTime.value = this.store.clock.getElapsedTime();
     this.fboMaterial.uniforms.tDiffuse.value = this.sourceTarget.texture;
     this.fboMaterial.uniforms.tPrev.value = this.targetA.texture;
 
