@@ -28,7 +28,7 @@ export class Canvas {
     this.sizeY = 4.33;
 
     this.setupPipeline();
-    this.mesh.material = new THREE.MeshBasicMaterial({ map: this.sourceTarget.texture });
+    this.mesh.material = new THREE.MeshBasicMaterial({ map: this.finalTarget.texture });
 
     this.store.registerUpdate(this.update.bind(this));
   }
@@ -59,13 +59,16 @@ export class Canvas {
       uniforms: {
         tDiffuse: { value: null },
         tPrev: { value: null },
-        resolution: {
-          value: new THREE.Vector4(this.store.width, this.store.height, 1, 1),
-        },
       },
       vertexShader: vertex,
       fragmentShader: fragmentFBO,
     });
+
+    this.fboQuad = new THREE.Mesh(
+      new THREE.PlaneGeometry(this.sizeX, this.sizeY),
+      this.fboMaterial
+    );
+    this.fboScene.add(this.fboQuad);
 
     this.finalScene = new THREE.Scene();
     this.finalQuad = new THREE.Mesh(
@@ -92,7 +95,7 @@ export class Canvas {
 
     this.renderer.setRenderTarget(this.targetA);
     this.fboMaterial.uniforms.tDiffuse.value = this.sourceTarget.texture;
-    this.fboMaterial.uniforms.tPrev.value = this.targetA.texture;
+    this.fboMaterial.uniforms.tPrev.value = this.targetB.texture;
     this.renderer.render(this.fboScene, this.fboCamera);
 
     this.finalQuad.material.map = this.targetA.texture;
@@ -100,7 +103,6 @@ export class Canvas {
     this.renderer.render(this.finalScene, this.fboCamera);
 
     this.renderer.setRenderTarget(null);
-
     // swap
     let temp = this.targetA;
     this.targetA = this.targetB;
