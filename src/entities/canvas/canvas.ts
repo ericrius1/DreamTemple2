@@ -37,10 +37,17 @@ export class Canvas {
   }
 
   setupPipeline() {
-    this.sourceTarget = new THREE.WebGLRenderTarget(2048, 2048);
-    this.targetA = new THREE.WebGLRenderTarget(2048, 2048);
-    this.targetB = new THREE.WebGLRenderTarget(2048, 2048);
-    this.finalTarget = new THREE.WebGLRenderTarget(2048, 2048);
+    this.sourceTarget = new THREE.WebGLRenderTarget(1024, 1024);
+    this.targetA = new THREE.WebGLRenderTarget(1024, 1024);
+    this.targetB = new THREE.WebGLRenderTarget(1024, 1024);
+    this.finalTarget = new THREE.WebGLRenderTarget(1024, 1024);
+
+    this.targetA.texture.minFilter = THREE.NearestFilter;
+    this.targetA.texture.magFilter = THREE.NearestFilter;
+    this.targetB.texture.minFilter = THREE.NearestFilter;
+    this.targetB.texture.magFilter = THREE.NearestFilter;
+    this.finalTarget.texture.minFilter = THREE.NearestFilter;
+    this.finalTarget.texture.magFilter = THREE.NearestFilter;
 
     this.sourceScene = new THREE.Scene();
     this.paintbrush = new THREE.Mesh(
