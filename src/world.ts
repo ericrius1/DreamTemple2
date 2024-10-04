@@ -36,6 +36,7 @@ export function loadWorld(store: Store) {
             }
           }
           if (obj.name.includes("Canvas")) {
+            store.interactables.push(obj)
             new Canvas(store, { mesh: obj })
           }
         })

@@ -1,18 +1,8 @@
 import * as THREE from "three"
 import { RGBELoader } from "three/addons/loaders/RGBELoader"
-import {
-  color,
-  positionView,
-  float,
-  positionWorld,
-  uniform,
-  triNoise3D,
-  fog,
-} from "three/tsl"
 
 export const Environment = async (store) => {
   const { scene, camera, gui, renderer } = store
-  const groundColor = color(0xd0dee7)
 
   // scene.add(new THREE.HemisphereLight(0xffa07a, 0x4b0082, 0.2)) // Light Salmon sky, Indigo ground, increased intensity for sunset vibe
   scene.add(new THREE.AmbientLight(0xffffff, 0.2))

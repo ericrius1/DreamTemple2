@@ -2,6 +2,9 @@ import { KeyboardInput } from "./keyboard-input"
 import { GamepadInput } from "./gamepad-input"
 import { MouseInput } from "./mouse-input"
 import { Store } from "../store"
+import * as THREE from "three"
+
+const vec = new THREE.Vector2()
 
 export interface InputState {
   forward: number
@@ -18,15 +21,30 @@ export class InputManager {
   private keyboardInput: KeyboardInput
   private gamepadInput: GamepadInput
   private mouseInput: MouseInput
-
+  private cursor: HTMLElement
+  private store: Store
   constructor(store: Store) {
     this.keyboardInput = new KeyboardInput()
     this.gamepadInput = new GamepadInput()
     this.mouseInput = new MouseInput()
+    this.store = store
+    this.cursor = document.querySelector(".cursor")
 
     store.registerUpdate(() => {
       this.mouseInput.updateInputState()
+      this.checkIntersections()
     })
+  }
+
+  checkIntersections() {
+    const raycaster = this.store.raycaster
+    raycaster.setFromCamera(vec, this.store.camera)
+    const intersects = raycaster.intersectObjects(this.store.interactables)
+    if (intersects.length > 0) {
+      this.cursor.classList.add("hovered")
+    } else {
+      this.cursor.classList.remove("hovered")
+    }
   }
 
   getInputState(): InputState {
