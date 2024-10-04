@@ -125,7 +125,9 @@ void main() {
 
 	vec3 waterColor = blendDarken(prev.rgb, floodColor * (1. + 0.01),0.2);
 
+	vec3 finalColor = blendDarken(waterColor, lcolor, 0.9);
+
     // gl_FragColor =  texel2 ;
-	gl_FragColor = vec4(lcolor, 1.);
+	gl_FragColor = vec4(finalColor, 1.);
 }
 

@@ -54,7 +54,7 @@ export class Canvas {
     this.sourceScene = new THREE.Scene();
     this.paintbrush = new THREE.Mesh(
       new THREE.SphereGeometry(0.2, 100, 100),
-      new THREE.MeshBasicMaterial({ color: "purple" })
+      new THREE.MeshBasicMaterial()
     );
     this.paintbrush.position.set(0, 0, -0.5);
     this.sourceScene.add(this.paintbrush);
