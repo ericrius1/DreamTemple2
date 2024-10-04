@@ -36,7 +36,7 @@ export function loadWorld(store: Store) {
             }
           }
           if (obj.name.includes("Canvas")) {
-            new Canvas({ mesh: obj })
+            new Canvas(store, { mesh: obj })
           }
         })
         environment = gltfScene
