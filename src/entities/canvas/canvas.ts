@@ -37,31 +37,27 @@ export class Canvas {
   }
 
   setupPipeline() {
-    this.sourceTarget = new THREE.WebGLRenderTarget(1024, 1024);
-    this.targetA = new THREE.WebGLRenderTarget(1024, 1024);
-    this.targetB = new THREE.WebGLRenderTarget(1024, 1024);
-    this.finalTarget = new THREE.WebGLRenderTarget(1024, 1024);
+    this.sourceTarget = new THREE.WebGLRenderTarget(2048, 2048);
+    this.targetA = new THREE.WebGLRenderTarget(2048, 2048);
+    this.targetB = new THREE.WebGLRenderTarget(2048, 2048);
+    this.finalTarget = new THREE.WebGLRenderTarget(2048, 2048);
 
-    this.targetA.texture.minFilter = THREE.NearestFilter;
-    this.targetA.texture.magFilter = THREE.NearestFilter;
-    this.targetB.texture.minFilter = THREE.NearestFilter;
-    this.targetB.texture.magFilter = THREE.NearestFilter;
-    this.finalTarget.texture.minFilter = THREE.NearestFilter;
-    this.finalTarget.texture.magFilter = THREE.NearestFilter;
+    // this.targetA.texture.minFilter = THREE.NearestFilter;
+    // this.targetA.texture.magFilter = THREE.NearestFilter;
+    // this.targetB.texture.minFilter = THREE.NearestFilter;
+    // this.targetB.texture.magFilter = THREE.NearestFilter;
+    // this.paintbrush.z -= 0.5;
+    this.targetA.texture.anisotropy = this.renderer.capabilities.getMaxAnisotropy();
+    this.targetB.texture.anisotropy = this.renderer.capabilities.getMaxAnisotropy();
+    this.finalTarget.texture.anisotropy = this.renderer.capabilities.getMaxAnisotropy();
 
     this.sourceScene = new THREE.Scene();
     this.paintbrush = new THREE.Mesh(
       new THREE.SphereGeometry(0.2, 100, 100),
       new THREE.MeshBasicMaterial({ color: "purple" })
     );
-    // this.paintbrush.z -= 0.5;
+    this.paintbrush.position.set(0, 0, -0.5);
     this.sourceScene.add(this.paintbrush);
-    this.bgmesh = new THREE.Mesh(
-      new THREE.PlaneGeometry(1, 1),
-      new THREE.MeshBasicMaterial({ color: "white" })
-    );
-    this.sourceScene.add(this.bgmesh);
-    this.bgmesh.position.z = -0.5;
 
     this.fboScene = new THREE.Scene();
 

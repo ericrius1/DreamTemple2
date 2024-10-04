@@ -48,7 +48,9 @@ void main() {
     vec2 aspect = vec2(1., uResolution.y/uResolution.x);
 
     vec2 disp = fbm(vUv * 33., 7) * aspect * 0.005;
-    gl_FragColor = vec4(disp, 0., 1.);
-    // gl_FragColor = vec4(1., 0., 1., 1.);
+    // gl_FragColor = vec4(disp, 0., 1.);
 
+
+
+    gl_FragColor =  prev;
 }
