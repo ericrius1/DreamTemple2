@@ -24,30 +24,28 @@ export class Canvas {
     this.store = store;
 
     this.renderer = store.renderer;
-    this.sizeX = 6.77;
+    this.sizeX = 6.77; // should match aspect ratio of mesh
     this.sizeY = 4.33;
 
     this.setupPipeline();
-
-    // this.mesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1));
-    // this.mesh.position.y += 2;
-    // this.store.scene.add(this.mesh);
-    this.mesh.material = new THREE.MeshBasicMaterial({ map: this.targetA.texture });
+    this.mesh.material = new THREE.MeshBasicMaterial({ map: this.sourceTarget.texture });
 
     this.store.registerUpdate(this.update.bind(this));
   }
 
   setupPipeline() {
-    this.sourceTarget = new THREE.WebGLRenderTarget(this.store.width, this.store.height);
+    this.sourceTarget = new THREE.WebGLRenderTarget(2048, 2048);
     this.targetA = new THREE.WebGLRenderTarget(2048, 2048);
-    this.targetB = new THREE.WebGLRenderTarget(this.store.width, this.store.height);
+    this.targetB = new THREE.WebGLRenderTarget(2048, 2048);
+    this.finalTarget = new THREE.WebGLRenderTarget(2048, 2048);
 
+    this.sourceScene = new THREE.Scene();
     this.fboScene = new THREE.Scene();
 
     this.paintbrush = new THREE.Mesh(new THREE.SphereGeometry(0.1, 100, 100));
     this.paintbrush.z -= 0.5;
-    this.fboScene.add(this.paintbrush);
-    // this.fboCamera = new THREE.PerspectiveCamera(50, 1, 0.1, 10000);
+    this.sourceScene.add(this.paintbrush);
+
     this.fboCamera = new THREE.OrthographicCamera(
       -this.sizeX / 2,
       this.sizeX / 2,
@@ -60,6 +58,7 @@ export class Canvas {
     this.fboMaterial = new THREE.ShaderMaterial({
       uniforms: {
         tDiffuse: { value: null },
+        tPrev: { value: null },
         resolution: {
           value: new THREE.Vector4(this.store.width, this.store.height, 1, 1),
         },
@@ -68,8 +67,12 @@ export class Canvas {
       fragmentShader: fragmentFBO,
     });
 
-    // this.fboQuad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), this.fboMaterial);
-    // this.fboScene.add(this.fboQuad);
+    this.finalScene = new THREE.Scene();
+    this.finalQuad = new THREE.Mesh(
+      new THREE.PlaneGeometry(this.sizeX, this.sizeY),
+      new THREE.MeshBasicMaterial({ map: null })
+    );
+    this.finalScene.add(this.finalQuad);
   }
 
   update() {
@@ -84,14 +87,23 @@ export class Canvas {
       this.paintbrush.position.set(mappedPointX, mappedPointY, -0.5);
     }
 
+    this.renderer.setRenderTarget(this.sourceTarget);
+    this.renderer.render(this.sourceScene, this.fboCamera);
+
     this.renderer.setRenderTarget(this.targetA);
+    this.fboMaterial.uniforms.tDiffuse.value = this.sourceTarget.texture;
+    this.fboMaterial.uniforms.tPrev.value = this.targetA.texture;
     this.renderer.render(this.fboScene, this.fboCamera);
+
+    this.finalQuad.material.map = this.targetA.texture;
+    this.renderer.setRenderTarget(this.finalTarget);
+    this.renderer.render(this.finalScene, this.fboCamera);
 
     this.renderer.setRenderTarget(null);
 
     // swap
-    // let temp = this.targetA;
-    // this.targetA = this.targetB;
-    // this.targetB = temp;
+    let temp = this.targetA;
+    this.targetA = this.targetB;
+    this.targetB = temp;
   }
 }

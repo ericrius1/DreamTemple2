@@ -70,23 +70,12 @@ export function createGlobalStore(): Store {
   store.controls = new OrbitControls(store.camera, store.inputManager, store.renderer.domElement);
   store.controls.enableDamping = true;
   store.renderer.setSize(window.innerWidth, window.innerHeight);
+  // store.renderer.autoClear = false;
   // store.renderer.setPixelRatio(1)
   // store.renderer.toneMapping = THREE.ReinhardToneMapping
-  store.renderer.toneMappingExposure = 10;
-  store.renderer.shadowMap.enabled = true;
-  store.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-
-  store.gui
-    .add({ toneMapping: THREE.ACESFilmicToneMapping }, "toneMapping", {
-      Linear: THREE.LinearToneMapping,
-      "ACES Filmic": THREE.ACESFilmicToneMapping,
-      reinhard: THREE.ReinhardToneMapping,
-    })
-    .onChange((v) => {
-      console.log(v);
-      store.renderer.toneMapping = Number(v);
-      store.renderer.toneMappingExposure = 1.5;
-    });
+  // store.renderer.toneMappingExposure = 10;
+  // store.renderer.shadowMap.enabled = true;
+  // store.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
   const canvasContainer = document.querySelector("#canvas-container");
   canvasContainer?.appendChild(store.renderer.domElement);
