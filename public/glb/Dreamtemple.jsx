@@ -36,8 +36,10 @@ export function Model(props) {
       </group>
       <mesh geometry={nodes.ground.geometry} material={materials.ground} position={[0, -26.606, 0]} scale={178.405} />
       <mesh geometry={nodes.LeftSpeaker.geometry} material={nodes.LeftSpeaker.material} position={[-2.772, 0.505, -3.996]} rotation={[-Math.PI, 0.615, -Math.PI]} scale={[0.623, 0.89, 0.623]} />
-      <mesh geometry={nodes.Canvas1.geometry} material={materials.sculpture} rotation={[Math.PI, 0, Math.PI]} />
+      <mesh geometry={nodes.Canvas1.geometry} material={materials.canv1} rotation={[Math.PI, 0, Math.PI]} />
+      <mesh geometry={nodes.SculptureLeft.geometry} material={materials.sculpture} position={[-2.762, 1.031, -3.957]} rotation={[Math.PI / 2, 0, 1.477]} scale={0.011} />
       <mesh geometry={nodes.Temple.geometry} material={materials.TempleMaterial} rotation={[Math.PI, 0, Math.PI]} />
+      <mesh geometry={nodes.Canvas2.geometry} material={materials.canv2} position={[0, -26.606, 0]} scale={178.405} />
     </group>
   )
 }
