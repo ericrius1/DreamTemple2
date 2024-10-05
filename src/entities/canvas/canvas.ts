@@ -18,8 +18,15 @@ export class Canvas {
   private finalScene: THREE.Scene;
   private finalQuad: THREE.Mesh;
   private renderer: THREE.WebGLRenderer;
+  private sizeX: number;
+  private sizeY: number;
+  private whiteTexture: THREE.Texture;
+  private finalTarget: THREE.WebGLRenderTarget;
+  private sourceScene: THREE.Scene;
+  private paintbrush: THREE.Group;
+  private brushParticles: THREE.Mesh[];
 
-  constructor(store, { mesh }: { mesh: THREE.Mesh }) {
+  constructor(store: Store, { mesh }: { mesh: THREE.Mesh }) {
     this.mesh = mesh;
     this.store = store;
 
@@ -42,20 +49,24 @@ export class Canvas {
     this.targetB = new THREE.WebGLRenderTarget(2048, 2048);
     this.finalTarget = new THREE.WebGLRenderTarget(2048, 2048);
 
-    // this.targetA.texture.minFilter = THREE.NearestFilter;
-    // this.targetA.texture.magFilter = THREE.NearestFilter;
-    // this.targetB.texture.minFilter = THREE.NearestFilter;
-    // this.targetB.texture.magFilter = THREE.NearestFilter;
-    // this.paintbrush.z -= 0.5;
-    // this.targetA.texture.anisotropy = this.renderer.capabilities.getMaxAnisotropy();
-    // this.targetB.texture.anisotropy = this.renderer.capabilities.getMaxAnisotropy();
-    // this.finalTarget.texture.anisotropy = this.renderer.capabilities.getMaxAnisotropy();
-
     this.sourceScene = new THREE.Scene();
-    this.paintbrush = new THREE.Mesh(
-      new THREE.SphereGeometry(0.2, 20, 20),
-      new THREE.MeshBasicMaterial()
+    this.paintbrush = new THREE.Group();
+    const mainBrush = new THREE.Mesh(
+      new THREE.SphereGeometry(0.05, 20, 20),
+      new THREE.MeshBasicMaterial({ color: 0xff0000 })
     );
+    this.paintbrush.add(mainBrush);
+
+    this.brushParticles = [];
+    for (let i = 0; i < 100; i++) {
+      const particle = new THREE.Mesh(
+        new THREE.SphereGeometry(0.01, 8, 8),
+        new THREE.MeshBasicMaterial({ color: 0xff0000 })
+      );
+      this.brushParticles.push(particle);
+      this.paintbrush.add(particle);
+    }
+
     this.sourceScene.add(this.paintbrush);
 
     this.fboScene = new THREE.Scene();
@@ -104,6 +115,16 @@ export class Canvas {
       const mappedPointX = mapLinear(uv.x, 0, 1, -this.sizeX / 2, this.sizeX / 2);
       const mappedPointY = mapLinear(uv.y, 0, 1, -this.sizeY / 2, this.sizeY / 2);
       this.paintbrush.position.set(mappedPointX, mappedPointY, -0.5);
+
+      // Update brush particles
+      const time = this.store.clock.getElapsedTime();
+      this.brushParticles.forEach((particle, index) => {
+        const angle = (index / this.brushParticles.length) * Math.PI * 2 + time * 2;
+        const radius = 0.3 + Math.sin(time * 3 + index) * 0.1;
+        particle.position.x = Math.cos(angle) * radius;
+        particle.position.y = Math.sin(angle) * radius;
+        particle.position.z = Math.sin(time * 5 + index) * 0.1;
+      });
     } else {
       this.paintbrush.position.set(0, 0, 10);
     }
@@ -118,14 +139,12 @@ export class Canvas {
     this.fboMaterial.uniforms.tPrev.value = this.targetA.texture;
 
     this.renderer.setRenderTarget(this.finalTarget);
-    this.finalQuad.material.map = this.targetA.texture;
+    (this.finalQuad.material as THREE.MeshBasicMaterial).map = this.targetA.texture;
     this.renderer.render(this.finalScene, this.fboCamera);
 
     let temp = this.targetA;
     this.targetA = this.targetB;
     this.targetB = temp;
     this.renderer.setRenderTarget(null);
-
-    // swap
   }
 }
